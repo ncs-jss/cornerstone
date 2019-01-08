@@ -1,0 +1,31 @@
+{% load static %}
+<html>
+    <head>
+        <title>
+            Index Page
+        </title>
+    </head>
+    <body>
+        <h4>Welcome {{user.username}}</h4>
+        <br>
+        <br>
+        <br>
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'logout' %}">logout</a>
+        {% endif %}
+        <br>
+        <br>
+        <a href="{% url 'dashboard' %}">dashboard</a>
+        {% if request.user.groups.all.0.name == 'ca_admin' %}
+        <a href="{% url 'tasks' %}">tasks</a>
+        <a href="{% url 'members' %}">Campus Ambassadors</a>
+        {% endif %}
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        {% block dashboard %}
+        {% endblock %}
+    </body>
+</html>
