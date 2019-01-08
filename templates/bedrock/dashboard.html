@@ -1,0 +1,20 @@
+{% extends 'bedrock/index.html' %}
+{% load static %}
+{% block dashboard %}
+
+{% for i in tks %}
+    {% if i.is_active %}
+        THIS IS GREEN BOX
+    {% else %}
+        A RED BOX
+    {% endif %}
+
+    <h3>Task title: {{i.title}}</h3> <br>
+    <h4>Description: {{i.description}} </h4>
+    Posted on: {{i.posted_on}} <br>
+    <br>
+    <br>
+    <br>
+    <br>
+{% endfor %}
+{% endblock %}

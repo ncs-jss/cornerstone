@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'keystone.apps.KeystoneConfig',
+    'bedrock.apps.BedrockConfig',
 ]
 
 MIDDLEWARE = [
