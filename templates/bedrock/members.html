@@ -1,0 +1,20 @@
+{% extends 'bedrock/index.html' %}
+{% load static %}
+{% block dashboard %}
+
+{% for i in members %}
+    name: {{i.user.first_name}} {{i.user.last_name}} <br>    
+    college: {{i.college}} <br>
+    email: {{i.user.email}} <br>
+    contact: {{i.contact}} <br>
+    <b>Delete this member?: <a href="{% url 'member_delete' i.id %}"> delete </a> </b>
+    {% if not i.verified %}
+    <u>Verify this member?: <a href="{% url 'member_verify' i.id %}"> Verify </a> </u>
+    {% endif %}
+    <br>
+    <br>
+    <br>
+    <br>
+{% endfor %}
+
+{% endblock %}
