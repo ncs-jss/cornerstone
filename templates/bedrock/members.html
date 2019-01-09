@@ -1,20 +1,32 @@
 {% extends 'bedrock/index.html' %}
 {% load static %}
 {% block dashboard %}
-
-{% for i in members %}
-    name: {{i.user.first_name}} {{i.user.last_name}} <br>    
-    college: {{i.college}} <br>
-    email: {{i.user.email}} <br>
-    contact: {{i.contact}} <br>
-    <b>Delete this member?: <a href="{% url 'member_delete' i.id %}"> delete </a> </b>
-    {% if not i.verified %}
-    <u>Verify this member?: <a href="{% url 'member_verify' i.id %}"> Verify </a> </u>
-    {% endif %}
-    <br>
-    <br>
-    <br>
-    <br>
-{% endfor %}
-
+<div id="page-wrapper">
+    <div class="table-container">
+        <table class="members-table">
+        <tr>
+            <th>Name</th>
+            <th>College</th>
+            <th>Email</th>
+            <th>Contact</th>
+            <th>Delete this member?</th>
+            <th>Verify this number?</th>
+        </tr>
+        {% for i in members %}
+        <tr>
+            <td>{{i.user.first_name}} {{i.user.last_name}}</td>
+            <td>{{i.college}}</td>
+            <td>{{i.user.email}}</td>
+            <td>{{i.contact}}</td>
+            <td><a href="{% url 'member_delete' i.id %}">Delete</a></td>
+            {% if not i.verified %}
+            <td class="nverified"><a href="{% url 'member_verify' i.id %}"> Verify </a></td>
+            {% else %}
+            <td class="verified"><a href="{% url 'member_verify' i.id %}"> Verify </a></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
 {% endblock %}
