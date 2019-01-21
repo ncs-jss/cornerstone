@@ -22,7 +22,7 @@
             {% if not i.verified %}
             <td class="nverified"><a href="{% url 'member_verify' i.id %}"> Verify </a></td>
             {% else %}
-            <td class="verified"><a href="{% url 'member_verify' i.id %}"> Verify </a></td>
+            <td class="verified"><a href="{% url 'member_verify' i.id %}"> Refute </a></td>
             {% endif %}
         </tr>
         {% endfor %}
