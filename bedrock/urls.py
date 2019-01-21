@@ -8,5 +8,6 @@ urlpatterns = [
          name='member_delete'),
     path('members/verify/<int:mem_id>', views.member_verify,
          name='member_verify'),
-    path('tasks', views.tasks_create, name='tasks_create'),
+    path('tasks/', views.tasks_create, name='tasks_create'),
+    path('tasks/delete/<int:task_id>', views.task_del, name='task_del'),
 ]

@@ -88,3 +88,14 @@ def tasks_create(request):
         tks = models.tasks.objects.filter(year=datetime.date.today().year)
         context = {'tks': tks}
         return render(request, 'bedrock/tasks.html', context)
+
+
+def task_del(request, task_id):
+    try:
+        if str(request.user.groups.all()[0]) == config.group[1]:
+            task = models.tasks.objects.get(id=task_id)
+            task.delete()
+            return HttpResponseRedirect('/campusambassador/tasks')
+    except BaseException:
+        pass
+    return HttpResponseRedirect('/campusambassador/tasks')
