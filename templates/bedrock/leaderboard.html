@@ -1,0 +1,29 @@
+{% extends 'bedrock/index.html' %}
+{% load static %}
+{% block dashboard %}
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Leaderboard</h1>
+        </div>
+    </div>
+    <div class="table-container">
+        <table class="members-table">
+        <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Score</th>
+            <th>College</th>
+        </tr>
+        {% for i in mmbrs %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{i.user.first_name}} {{i.user.last_name}}</td>
+            <td>{{i.score}}</td>
+            <td>{{i.college}}</td>
+        </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

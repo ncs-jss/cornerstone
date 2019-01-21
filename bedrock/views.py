@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.utils import timezone
 from . import models, forms
 from keystone import config
 from keystone.models import ca, ca_admin
 
 import json
-import datetime
 
 
 def is_admin(user):
@@ -20,7 +20,7 @@ def is_admin(user):
 
 @login_required(login_url=config.root)
 def dashboard(request):
-    tks = models.tasks.objects.filter(year=datetime.date.today().year)
+    tks = models.tasks.objects.filter(year=timezone.now().year)
     try:
         val = ca.objects.get(user=request.user).verified
     except BaseException:
@@ -31,7 +31,7 @@ def dashboard(request):
 
 @user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
 def members(request):
-    mmbrs = ca.objects.filter(year=datetime.date.today().year)
+    mmbrs = ca.objects.filter(year=timezone.now().year)
     context = {'members': mmbrs}
     return render(request, 'bedrock/members.html', context)
 
@@ -77,7 +77,7 @@ def tasks_create(request):
         else:
             return JsonResponse({'response': 'invalid token'})
     else:
-        tks = models.tasks.objects.filter(year=datetime.date.today().year)
+        tks = models.tasks.objects.filter(year=timezone.now().year)
         context = {'tks': tks}
         return render(request, 'bedrock/tasks.html', context)
 
@@ -92,7 +92,24 @@ def task_del(request, task_id):
 
 @user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
 def task_active(request, task_id):
-        task = models.tasks.objects.get(id=task_id)
-        task.is_active = not task.is_active
-        task.save()
-        return HttpResponseRedirect('/campusambassador/tasks')
+    task = models.tasks.objects.get(id=task_id)
+    task.is_active = not task.is_active
+    task.save()
+    return HttpResponseRedirect('/campusambassador/tasks')
+
+
+@login_required(login_url=config.root)
+def leaderboard(request):
+    mmbrs = ca.objects.filter(verified=True, year=timezone.now().year)
+    mmbrs = mmbrs.order_by('-score')
+    context = {'mmbrs': mmbrs}
+    return render(request, 'bedrock/leaderboard.html', context)
+
+
+@user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
+def score_update(request, mem_id):
+    if request.POST['token'] == config.token[4]:
+        mmbr = ca.objects.get(id=mem_id)
+        mmbr.score = request.POST['score']
+        mmbr.save()
+    return HttpResponseRedirect('/campusambassador/members')
