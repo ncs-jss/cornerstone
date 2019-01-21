@@ -99,3 +99,15 @@ def task_del(request, task_id):
     except BaseException:
         pass
     return HttpResponseRedirect('/campusambassador/tasks')
+
+
+def task_active(request, task_id):
+    try:
+        if str(request.user.groups.all()[0]) == config.group[1]:
+            task = models.tasks.objects.get(id=task_id)
+            task.is_active = not task.is_active
+            task.save()
+            return HttpResponseRedirect('/campusambassador/tasks')
+    except BaseException:
+        pass
+    return HttpResponseRedirect('/campusambassador/tasks')
