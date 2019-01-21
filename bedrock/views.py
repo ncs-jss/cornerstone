@@ -96,3 +96,11 @@ def task_active(request, task_id):
         task.is_active = not task.is_active
         task.save()
         return HttpResponseRedirect('/campusambassador/tasks')
+
+
+@login_required(login_url=config.root)
+def leaderboard(request):
+    mmbrs = ca.objects.filter(verified=True, year=timezone.now().year)
+    mmbrs = mmbrs.order_by('-score')
+    context = {'mmbrs': mmbrs}
+    return render(request, 'bedrock/leaderboard.html', context)
