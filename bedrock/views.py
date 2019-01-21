@@ -92,10 +92,10 @@ def task_del(request, task_id):
 
 @user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
 def task_active(request, task_id):
-        task = models.tasks.objects.get(id=task_id)
-        task.is_active = not task.is_active
-        task.save()
-        return HttpResponseRedirect('/campusambassador/tasks')
+    task = models.tasks.objects.get(id=task_id)
+    task.is_active = not task.is_active
+    task.save()
+    return HttpResponseRedirect('/campusambassador/tasks')
 
 
 @login_required(login_url=config.root)
