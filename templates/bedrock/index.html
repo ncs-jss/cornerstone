@@ -103,12 +103,17 @@
                         <li>
                             <a href="{% url 'tasks_create' %}"><i class="fa fa-pencil fa-fw"></i> Task Management </a>
                         </li>
+                        <li>
+                            <a href="{% url 'submissions' %}"><i class="fa fa-pencil fa-fw"></i> Submissions </a>
+                        </li>
                         {%endif%}
                     </ul>
                 </div>
         
             </div>
         </nav>
+        {{errors}}
+        
         {% block dashboard %}
         {% endblock %}
 </body>

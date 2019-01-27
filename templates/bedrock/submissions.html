@@ -1,0 +1,41 @@
+{% extends 'bedrock/index.html' %}
+{% load static %}
+{% block dashboard %}
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Campus Ambassador Submissions</h1>
+        </div>
+    </div>
+<div class="table-container">
+        <table class="members-table">
+        <tr>
+            <th>Name</th>
+            <th>College</th>
+            <th>Email</th>
+            <th>Contact</th>
+            <th>Task_title</th>
+            <th>Description</th>
+            <th>Verification</th>
+            <th>Submission time</th>
+        </tr>
+        {% for i in submissions %}
+        <tr>
+            <td>{{i.contributor.user.first_name}} {{i.contributor.user.last_name}}</td>
+            <td>{{i.contributor.college}}</td>
+            <td>{{i.contributor.user.email}}</td>
+            <td>{{i.contributor.contact}}</td>
+            <td>{{i.task.title}}</td>
+            <td>{{i.details}}</td>
+            {% if not i.verified %}
+            <td class="nverified"><a href="{% url 'verify_submission' i.id %}"> Verify </a></td>
+            {% else %}
+            <td class="verified"><a href="{% url 'verify_submission' i.id %}"> Refute </a></td>
+            {% endif %}
+            <td>{{i.submission_at}}</td>
+        </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

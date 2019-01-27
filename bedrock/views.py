@@ -23,9 +23,11 @@ def dashboard(request):
     tks = models.tasks.objects.filter(year=timezone.now().year)
     try:
         val = ca.objects.get(user=request.user).verified
+        pending = not ca.objects.get(user=request.user).task_completed
     except BaseException:
         val = True
-    context = {'tks': tks, 'check': val}
+        pending = True
+    context = {'tks': tks, 'check': val, 'pending': pending}
     return render(request, 'bedrock/dashboard.html', context)
 
 
@@ -113,3 +115,41 @@ def score_update(request, mem_id):
         mmbr.score = request.POST['score']
         mmbr.save()
     return HttpResponseRedirect('/campusambassador/members')
+
+
+@login_required(login_url=config.root)
+def submit_task(request, task_id):
+    print(request.POST)
+    if request.POST['token'] == config.token[5]:
+        ambassador = ca.objects.get(user=request.user)
+        if ambassador.task_completed:
+            context = {'error': 'You have already submitted the task.'}
+            return render(request, 'bedrock/dashboard.html', context)
+        form = forms.task_submission(request.POST)
+        if form.is_valid():
+            submission = form.save(commit=False)
+            submission.contributor = ambassador
+            ambassador.task_completed = True
+            submission.task = models.tasks.objects.get(id=task_id)
+            ambassador.save()
+            submission.save()
+        return HttpResponseRedirect('/campusambassador')
+    return HttpResponseRedirect(config.root)
+
+
+@user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
+def submissions(request):
+    submissions = models.submissions.objects.all()
+    context = {'submissions': submissions}
+    return render(request, 'bedrock/submissions.html', context)
+
+
+@user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
+def verify_submission(request, submission_id):
+    submission = models.submissions.objects.get(id=submission_id)
+    ambassador = ca.objects.get(id=submission.contributor.id)
+    submission.verified = not submission.verified
+    ambassador.task_completed = not ambassador.task_completed
+    ambassador.save()
+    submission.save()
+    return HttpResponseRedirect('/campusambassador/submissions')

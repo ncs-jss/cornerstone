@@ -13,4 +13,8 @@ urlpatterns = [
     path('tasks/active/<int:task_id>', views.task_active, name='tog_active'),
     path('leaderboard/', views.leaderboard, name='leaderboard'),
     path('score/<int:mem_id>', views.score_update, name='score_update'),
+    path('submit_task/<int:task_id>', views.submit_task, name='submit_task'),
+    path('submissions/', views.submissions, name='submissions'),
+    path('submissions/<int:submission_id>', views.verify_submission,
+         name='verify_submission'),
 ]
