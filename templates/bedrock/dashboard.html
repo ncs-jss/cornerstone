@@ -7,7 +7,7 @@
             <h1 class="page-header">Campus Ambassador's tasks</h1>
         </div>
     </div>
-
+    {{errors}}
     {% if check %}
     <div class="row">
         <br>
@@ -28,6 +28,16 @@
                 <div class="panel-footer">
                     <span class="pull-left medium">{{i.title}}</span>
                     <span class="pull-right medium">{{i.posted_on}}</span>
+                    <br>
+                    {% if i.is_active and pending %}
+                    <span class="pull-right medium">
+                        <form method="post" action="{% url 'submit_task' i.id %}">
+                            <input type="text" name="details" placeholder="Drive Link">
+                            <input type="hidden" name="token" value="tsub723">
+                            <button type="submit"> Submit task</button>
+                        </form>
+                    </span>
+                    {% endif %}
                     <div class="clearfix"></div>
                 </div>
             </div>
