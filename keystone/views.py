@@ -8,9 +8,9 @@ import json
 
 def redirect(request):
     if str(request.user.groups.all()[0]) in config.group[:2]:
-        return JsonResponse({'response': 'type 1 login'})
+        return JsonResponse({'response': '200_1'})
     else:
-        return JsonResponse({'response': 'type 2 login'})
+        return JsonResponse({'response': '200_2'})
 
 
 def login(request):
@@ -28,17 +28,17 @@ def login(request):
                     auth.login(request, user)
                     return redirect(request)
                 else:
-                    return JsonResponse({'response': 'Invalid credentias'})
+                    return JsonResponse({'response': 'Invalid credential'})
             else:
                 return JsonResponse({'response': 'Method not allowed'})
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect(config.root)
 
 
 def logout(request):
     auth.logout(request)
     if request.method == 'POST':
-        return JsonResponse({'response': 'logged out'})
-    return HttpResponseRedirect('/')
+        return JsonResponse({'response': 'logged_out'})
+    return HttpResponseRedirect(config.root)
 
 
 def signup(request):
@@ -63,4 +63,4 @@ def signup(request):
                     context = {'response': [form_a.errors, form_b.errors]}
                     return(JsonResponse(context))
         return JsonResponse({'response': 'Method not allowed'})
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect(config.root)
