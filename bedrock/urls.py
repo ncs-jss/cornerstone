@@ -17,4 +17,6 @@ urlpatterns = [
     path('submissions/', views.submissions, name='submissions'),
     path('submissions/<int:submission_id>', views.verify_submission,
          name='verify_submission'),
+    path('instructions', views.instructions, name='instructions'),
+    path('capoints', views.capoints, name='capoints'),
 ]

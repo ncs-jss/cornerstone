@@ -19,6 +19,16 @@ def is_admin(user):
 
 
 @login_required(login_url=config.root)
+def instructions(request):
+    return render(request, 'bedrock/instructions.html', {})
+
+
+@login_required(login_url=config.root)
+def capoints(request):
+    return render(request, 'bedrock/capoints.html', {})
+
+
+@login_required(login_url=config.root)
 def dashboard(request):
     tks = models.tasks.objects.filter(year=timezone.now().year)
     try:
