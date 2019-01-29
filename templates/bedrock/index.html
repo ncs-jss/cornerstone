@@ -96,9 +96,15 @@
                         <li>
                             <a href="{% url 'leaderboard' %}"><i class="fa fa-trophy fa-fw"></i> Leaderboard </a>
                         </li>
+                        <li>
+                            <a href="{% url 'instructions' %}"><i class="fa fa-book fa-fw"></i> Instructions </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'capoints' %}"><i class="fa fa-book fa-fw"></i> CA Points </a>
+                        </li>
                         {% if request.user.groups.all.0.name == 'ca_admin' %}
                         <li>
-                            <a href="{% url 'members' %}"><i class="fa fa-book fa-fw"></i> Campus Ambassadors </a>
+                            <a href="{% url 'members' %}"><i class="fa fa-pencil fa-fw"></i> Campus Ambassadors </a>
                         </li>
                         <li>
                             <a href="{% url 'tasks_create' %}"><i class="fa fa-pencil fa-fw"></i> Task Management </a>
