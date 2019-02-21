@@ -1,16 +1,28 @@
 from django.contrib import auth
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
 from django.http import JsonResponse, HttpResponseRedirect
-from . import forms, config
+from django.shortcuts import render
+from . import forms, models, config
 
 import json
+import re
 
 
-def redirect(request):
-    if str(request.user.groups.all()[0]) in config.group[:2]:
+def redirect(user):
+    if str(user.groups.all()[0]) in config.group[:2]:
         return JsonResponse({'response': '200_1'})
     else:
         return JsonResponse({'response': '200_2'})
+
+
+def is_admin(user):
+    try:
+        if str(user.groups.all()[0]) == config.group[2]:
+            return True
+    except BaseException:
+        pass
+    return False
 
 
 def login(request):
@@ -26,7 +38,7 @@ def login(request):
                                          password=password)
                 if user and user.is_active:
                     auth.login(request, user)
-                    return redirect(request)
+                    return redirect(request.user)
                 else:
                     return JsonResponse({'response': 'Invalid credential'})
             else:
@@ -63,4 +75,59 @@ def signup(request):
                     context = {'response': [form_a.errors, form_b.errors]}
                     return(JsonResponse(context))
         return JsonResponse({'response': 'Method not allowed'})
+    return HttpResponseRedirect(config.root)
+
+
+def online_reg(request):
+    return render(request, "keystone/online.html", {})
+
+
+def temp_submit(request, id):
+    return render(request, "keystone/online_submit.html", {'zeal_id': id})
+
+
+def temp_reg(request):
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        print(data)
+        if request.method == 'POST':
+            if data['token'] in config.token[6:8]:
+                data = forms.details_form(data)
+                if data.is_valid():
+                    details = data.save()
+                    details.temp_id = "ZO_"+str(details.id)
+                    details.save()
+                    return JsonResponse({'response': '200', 'id': details.id})
+                else:
+                    context = {'errors': data.errors, 'response': '500'}
+                    return JsonResponse(context)
+    except BaseException:
+        pass
+    return JsonResponse({'response': 'Invalid'})
+
+
+@user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
+def register(request):
+    if request.method == 'POST':
+        data = request.POST
+        if data['token'] == config.token[7]:
+            stat = json.loads(temp_reg(request).content.decode('utf-8'))
+            if stat['response'] == '200':
+                details = models.details.objects.get(id=stat['id'])
+                user = models.reg_admin.objects.get(user=request.user)
+                if bool(re.match(r'jss', data['college'].lower())):
+                    fee = 250   # Inside college Fee
+                else:
+                    fee = 250   # Other college Fee
+                reg = models.registeration.objects.create(fee=fee,
+                                                          created_by=user,
+                                                          details=details)
+                reg.zeal_id = 'Zeal_'+str(reg.id)
+                details.temp_status = False
+                reg.save()
+                details.save()
+                context = {'zeal_id': reg.zeal_id}
+                return render(request, 'keystone/final.html', context)
+            else:
+                return render(request, 'keystone/register.html', stat)
     return HttpResponseRedirect(config.root)
