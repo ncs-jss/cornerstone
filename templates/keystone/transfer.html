@@ -1,0 +1,75 @@
+{% extends 'keystone/base.html' %}
+{% load static %}
+{% block content %}
+
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header text-center">Already Registered participants.</h1>
+        </div>
+    </div>
+    <div class="row">
+        <br><br><br><br>
+        <form method="POST">
+            <div class="col-lg-6 col-lg-offset-3">
+                <input type="hidden" name="token" value="trans734">
+                <div class="form-group">
+                    <label>Enter the Registration No:</label>
+                    <input type="text" name="id" id="search" class="form-control">
+                    <p class="help-block">Example: ZO_1 </p>
+                </div>
+                <div class="form-group">
+                    <input type="submit" id="submitbtn" name="submitbtn" class="col-lg-offset-1 btn btn-primary btn-lg" value="ID Search">
+                </div>
+            </div>
+        </form>
+        <br><br>
+        <form method="POST">
+            <div class="col-lg-6 col-lg-offset-3">
+                <input type="hidden" name="token" value="trans734">
+                <div class="form-group">
+                    <label>Enter the E-mail address:</label>
+                    <input type="text" name="email" id="search" class="form-control">
+                    <p class="help-block">Example: abc@xyz.com </p>
+                </div>
+                <div class="form-group">
+                    <input type="submit" id="submitbtn" name="submitbtn" class="col-lg-offset-1 btn btn-primary btn-lg" value="Mail Search">
+                </div>
+            </div>
+        </form>
+        <br><br>
+        <form method="POST">
+            <div class="col-lg-6 col-lg-offset-3">
+                <input type="hidden" name="token" value="trans734">
+                <div class="form-group">
+                    <label>Enter the contact number:</label>
+                    <input type="text" name="contact" id="search" class="form-control">
+                    <p class="help-block">Note: Only 10 digits. </p>
+                </div>
+                <div class="form-group">
+                    <input type="submit" id="submitbtn" name="submitbtn" class="col-lg-offset-1 btn btn-primary btn-lg" value="No. Search">
+                </div>
+            </div>
+        </form>
+    </div>
+    {% if details %}
+            Year- {{details.year}} <br/>
+            Name- {{details.name}} <br/>
+            Email- {{details.email}} <br/>
+            Branch- {{details.branch}} <br/>
+            Course- {{details.course}} <br/>
+            College- {{details.college}} <br/>
+            Contact- {{details.contact}} <br/>
+            Temp_id- {{details.temp_id}} <br/>
+            <form method='post' acion="{% url 'transfer' %}">
+                <input type="hidden" name="tid" value="{{details.id}}">
+                <input type="hidden" name="token" value="trans734">
+                <button type="submit" id="submitbtn" class="col-lg-offset-1 btn btn-primary btn-lg"> Create ID </button>
+            </form>
+    {% elif response == '200' %}
+        Zeal ID already exists as {{zeal_id}}
+    {% elif response == '400' %}
+        No record found. Needs ro register at http://register.zealicon.in or make 'New Participant registeration'.
+    {% endif %}
+</div>
+{% endblock %}

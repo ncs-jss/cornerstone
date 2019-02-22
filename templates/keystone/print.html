@@ -1,0 +1,30 @@
+{% extends 'keystone/base.html' %}
+{% load static %}
+{% block content %}
+
+        <div id="page-wrapper">
+            {% if error %} <h2 style="margin:30px 20px;"> No I-Cards To Print. </h2>
+            {% else %}
+            <h2 style="margin:30px 20px;">Thanks for registering.</h2>
+            <div class="row">
+                <div class="col-sm-3">
+                    <a href="/print/" target="_blank" onclick ="reset_session()" class="btn btn-primary">Print Id Cards {{length}} </a>
+                </div>
+                <div class="col-sm-3">
+                    <a href="/reset" class="btn btn-danger">Reset current session</a>
+                </div>
+                <div class="col-sm-3">
+                    <a href="/index" class="btn btn-primary">Register new participant</a>
+                </div>
+                <div class="col-sm-3">
+                    <a href="/print/receipt" target="_blank" class="btn btn-primary"> Print Receipts {{length}}</a>
+                </div>
+            </div>
+            <br>
+            <br>
+            <br>
+            Generated Zeal_id:- {{zeal_id}}
+        {% endif %}
+        </div>
+
+{% endblock %}

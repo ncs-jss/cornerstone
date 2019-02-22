@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from . import forms, models, config
+from urllib import parse
 
 import json
 import re
@@ -23,6 +24,13 @@ def is_admin(user):
     except BaseException:
         pass
     return False
+
+
+def college_check(college):
+    if bool(re.match(r'jss', college.lower())):
+        return 250, 1   # Inside college Fee
+    else:
+        return 250, 0   # Other college Fee
 
 
 def login(request):
@@ -86,10 +94,20 @@ def temp_submit(request, id):
     return render(request, "keystone/online_submit.html", {'zeal_id': id})
 
 
-def temp_reg(request):
+@user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
+def dashboard(request):
+    return render(request, "keystone/dashboard.html", {})
+
+
+def temp_reg(request, chk=False):
     try:
-        data = json.loads(request.body.decode('utf-8'))
-        print(data)
+        if chk:
+            response = request.body.decode(encoding='utf-8')
+            response = dict(parse.parse_qsl(response))
+            cnvrt = json.dumps(response)
+            data = json.loads(cnvrt)
+        else:
+            data = json.loads(request.body.decode('utf-8'))
         if request.method == 'POST':
             if data['token'] in config.token[6:8]:
                 data = forms.details_form(data)
@@ -106,28 +124,92 @@ def temp_reg(request):
     return JsonResponse({'response': 'Invalid'})
 
 
+def generate(user, details):
+    user = models.reg_admin.objects.get(user=user)
+    fee, flag = college_check(details.college)
+    user.amount_transferred += fee
+    if flag:
+        user.in_clg_reg += 1
+    else:
+        user.outside_clg_reg += 1
+    reg = models.registeration.objects.create(fee=fee,
+                                              created_by=user,
+                                              details=details)
+    reg.zeal_id = 'Zeal_'+str(reg.id)
+    details.temp_status = False
+    reg.save()
+    details.save()
+    user.save()
+    return reg.zeal_id
+
+
 @user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
 def register(request):
     if request.method == 'POST':
         data = request.POST
         if data['token'] == config.token[7]:
-            stat = json.loads(temp_reg(request).content.decode('utf-8'))
+            stat = json.loads(temp_reg(request, True).content.decode('utf-8'))
             if stat['response'] == '200':
                 details = models.details.objects.get(id=stat['id'])
-                user = models.reg_admin.objects.get(user=request.user)
-                if bool(re.match(r'jss', data['college'].lower())):
-                    fee = 250   # Inside college Fee
-                else:
-                    fee = 250   # Other college Fee
-                reg = models.registeration.objects.create(fee=fee,
-                                                          created_by=user,
-                                                          details=details)
-                reg.zeal_id = 'Zeal_'+str(reg.id)
-                details.temp_status = False
-                reg.save()
-                details.save()
-                context = {'zeal_id': reg.zeal_id}
-                return render(request, 'keystone/final.html', context)
+                zeal_id = generate(request.user, details)
+                context = {'zeal_id': zeal_id}
+                return render(request, 'keystone/print.html', context)
             else:
                 return render(request, 'keystone/register.html', stat)
-    return HttpResponseRedirect(config.root)
+        return HttpResponseRedirect(config.root)
+    return render(request, 'keystone/register.html', {})
+
+
+@user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
+def search(request, chk=False):
+    if request.method == 'POST':
+        data = request.POST
+        fields = data.keys()
+        try:
+            if 'id' in fields:
+                details = models.details.objects.get(temp_id=data['id'])
+            elif 'email' in fields:
+                details = models.details.objects.get(email=data['email'])
+            elif 'contact' in fields:
+                details = models.details.objects.get(contact=data['contact'])
+        except BaseException:
+            context = {'response': '400'}
+            if chk:
+                return 0, None
+            return render(request, 'keystone/search.html', context)
+        if details.temp_status:
+            context = {'details': details}
+            if chk:
+                return 1, context
+            return render(request, 'keystone/search.html', context)
+        zeal_id = models.registeration.objects.get(details=details)
+        context = {'details': details, 'zeal_id': zeal_id.zeal_id}
+        if chk:
+            return 2, context
+        return render(request, 'keystone/search.html', context)
+    else:
+        return render(request, 'keystone/search.html', {})
+
+
+@user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
+def transfer(request):
+    if request.method == 'POST':
+        if request.POST['token'] == config.token[8]:
+            fields = request.POST.keys()
+            if 'tid' in fields:
+                details = models.details.objects.get(id=request.POST['tid'])
+                zeal_id = generate(request.user, details)
+                context = {'zeal_id': zeal_id}
+                return render(request, 'keystone/print.html', context)
+            status, data = search(request, True)
+            if not bool(status):
+                context = {'response': '400'}
+                return render(request, 'keystone/transfer.html', context)
+            elif status == 2:
+                context = {'response': '200', 'zeal_id': data['zeal_id']}
+                return render(request, 'keystone/transfer.html', context)
+            else:
+                context = {'details': data['details']}
+                return render(request, 'keystone/transfer.html', context)
+    else:
+        return render(request, 'keystone/transfer.html', {})
