@@ -213,3 +213,27 @@ def transfer(request):
                 return render(request, 'keystone/transfer.html', context)
     else:
         return render(request, 'keystone/transfer.html', {})
+
+
+@user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
+def printing(request):
+    if request.method == 'POST':
+        data = request.POST
+        if data['token'] == config.token[9]:
+            try:
+                query = models.registeration.objects
+                if data['id'] == '1':
+                    ids = query.all()
+                elif data['id'] == '2':
+                    mn = int(data['min'])
+                    mx = int(data['max'])
+                    ids = query.filter(id__range=(mn, mx))
+                else:
+                    ids = query.filter(zeal_id=data['id'])
+                context = {'zeal_ids': ids}
+                return render(request, 'keystone/cards.html', context)
+            except BaseException:
+                pass
+        context = {'errors': 'Invalid'}
+        return render(request, 'keystone/print.html', context)
+    return render(request, 'keystone/print.html', {})

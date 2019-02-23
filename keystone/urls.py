@@ -11,4 +11,5 @@ urlpatterns = [
     path('temp/<int:id>', views.temp_submit, name='temp_submit'),
     path('zeal_reg', views.register, name='register'),
     path('transfer', views.transfer, name='transfer'),
+    path('print', views.printing, name='print'),
 ]

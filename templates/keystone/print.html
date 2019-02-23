@@ -3,28 +3,34 @@
 {% block content %}
 
         <div id="page-wrapper">
-            {% if error %} <h2 style="margin:30px 20px;"> No I-Cards To Print. </h2>
-            {% else %}
-            <h2 style="margin:30px 20px;">Thanks for registering.</h2>
+            <h2 style="margin:30px 20px;">Registeration Successfull!</h2>
+            {{errors}}
             <div class="row">
-                <div class="col-sm-3">
-                    <a href="/print/" target="_blank" onclick ="reset_session()" class="btn btn-primary">Print Id Cards {{length}} </a>
+                <div class="col-sm-4">
+                    <form method="post" action="{% url 'print' %}">
+                        <input type="hidden" name="token" value="prnt954">
+                        <button type="submit" name="id" value="{{zeal_id}}" class="btn btn-primary">Print current zeal ID. </button>
+                    </form>
                 </div>
-                <div class="col-sm-3">
-                    <a href="/reset" class="btn btn-danger">Reset current session</a>
+                <div class="col-sm-4">
+                    <form method="post" action="{% url 'print' %}">
+                        <input type="hidden" name="token" value="prnt954">
+                        <input type="text" name="min" placeholder="Minimum count">
+                        <input type="text" name="max" placeholder="Maximum count">
+                        <button type="submit" name="id" value="2" class="btn btn-primary">Print range of cards. </button>
+                    </form>
                 </div>
-                <div class="col-sm-3">
-                    <a href="/index" class="btn btn-primary">Register new participant</a>
-                </div>
-                <div class="col-sm-3">
-                    <a href="/print/receipt" target="_blank" class="btn btn-primary"> Print Receipts {{length}}</a>
+                <div class="col-sm-4">
+                    <form method="post" action="{% url 'print' %}">
+                        <input type="hidden" name="token" value="prnt954">
+                        <button type="submit" name="id" value="1" class="btn btn-primary">Print All </button>
+                    </form>
                 </div>
             </div>
             <br>
             <br>
             <br>
             Generated Zeal_id:- {{zeal_id}}
-        {% endif %}
         </div>
 
 {% endblock %}
