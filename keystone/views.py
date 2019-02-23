@@ -160,33 +160,35 @@ def register(request):
     return render(request, 'keystone/register.html', {})
 
 
-@user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
 def search(request, chk=False):
     if request.method == 'POST':
         data = request.POST
-        fields = data.keys()
-        try:
-            if 'id' in fields:
-                details = models.details.objects.get(temp_id=data['id'])
-            elif 'email' in fields:
-                details = models.details.objects.get(email=data['email'])
-            elif 'contact' in fields:
-                details = models.details.objects.get(contact=data['contact'])
-        except BaseException:
-            context = {'response': '400'}
+        if data['token'] in config.token[8:10]:
+            fields = data.keys()
+            try:
+                query = models.details.objects
+                if 'id' in fields:
+                    details = query.get(temp_id=data['id'])
+                elif 'email' in fields:
+                    details = query.get(email=data['email'])
+                elif 'contact' in fields:
+                    details = query.get(contact=data['contact'])
+            except BaseException:
+                context = {'response': '400'}
+                if chk:
+                    return 0, None
+                return render(request, 'keystone/search.html', context)
+            if details.temp_status:
+                context = {'details': details}
+                if chk:
+                    return 1, context
+                return render(request, 'keystone/search.html', context)
+            zeal_id = models.registeration.objects.get(details=details)
+            context = {'details': details, 'zeal_id': zeal_id.zeal_id}
             if chk:
-                return 0, None
+                return 2, context
             return render(request, 'keystone/search.html', context)
-        if details.temp_status:
-            context = {'details': details}
-            if chk:
-                return 1, context
-            return render(request, 'keystone/search.html', context)
-        zeal_id = models.registeration.objects.get(details=details)
-        context = {'details': details, 'zeal_id': zeal_id.zeal_id}
-        if chk:
-            return 2, context
-        return render(request, 'keystone/search.html', context)
+        return HttpResponseRedirect(config.root)
     else:
         return render(request, 'keystone/search.html', {})
 
@@ -219,7 +221,7 @@ def transfer(request):
 def printing(request):
     if request.method == 'POST':
         data = request.POST
-        if data['token'] == config.token[9]:
+        if data['token'] == config.token[10]:
             try:
                 query = models.registeration.objects
                 if data['id'] == '1':

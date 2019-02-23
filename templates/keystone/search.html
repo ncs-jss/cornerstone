@@ -1,0 +1,185 @@
+{% load static %}
+
+<html>
+<head>
+  <title> Zealicon 2k19 </title>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Zealicon 2k19</title>
+    <link href="{% static "bower_components/bootstrap/dist/css/bootstrap.min.css"%}" rel="stylesheet">
+    <link href="{% static "bower_components/metisMenu/dist/metisMenu.min.css"%}" rel="stylesheet">
+    <link href="{% static "dist/css/sb-admin-2.css"%}" rel="stylesheet">
+    <link href="{% static "bower_components/font-awesome/css/font-awesome.min.css"%}" rel="stylesheet" type="text/css">
+    <style>
+        #outer {
+            position: absolute;
+            top: 250px;
+            z-index: 50000; 
+            background-color: white;   
+            height: 60%; 
+            box-shadow: 2px 4px 16px 2px rgba(0,0,0,0.4);
+            /*border-bottom: 4px solid #3498DB;*/
+               }
+        #log {
+            margin-top: 20%;
+        }
+        nav {
+            background-color: #000000 !important;
+            height:250px;
+            margin-bottom: 10px;
+        }
+        #but {
+            background-color:#000000; /*3498DB;*/ 
+            border-color: #000000;
+        }
+        .navbar-header {
+            text-align: center;
+            top: 20px;
+        }
+        #zea {
+            width:300px;
+        }
+        .container{
+          display: flex;
+          margin:auto;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: space-around;      
+        }
+        .i-card{
+            width: 300px;
+            height: 189px;
+            border: 2px solid #ccc;
+            padding: 0 10px;
+            display: flex;
+            margin:25px 0;
+        }
+        .i-card>*{
+          flex-basis:50%;
+        }
+        .logo{
+          text-align: center;
+          display: flex;
+          flex-direction: row;
+          flex-wrap:wrap;      
+          font-family: sans-serif;
+        }
+        
+        .logo img{
+            display: block;
+            height: 100px;
+            width: 100%;
+            padding-top: 10px;
+            padding-left: 7px;
+        }
+        .details{
+            text-align: right;
+            display: flex;
+            flex-direction:row;
+            justify-content:flex-end;
+            align-items:center;
+        }
+        .details p{
+          word-break:break-all;
+          margin: 4px 0;
+          font-size: 13px;
+        }
+        body{
+            overflow-x: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-static-top " role="navigation">
+        <div class="navbar-header col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3" >
+            <img id="zea" class=""  src="{% static "images/Zealicon.png"%}">
+        </div>
+    </nav>
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header text-center">Zeal ID search.</h1>
+        </div>
+    </div>
+    {% if response %}
+        <h3><center>NOT YET REGISTERED!! Go to <a href="http://register.zealicon.in">register.zealicon.in</a> and fill up your details. Therein you will get a temporary ID which is to be paid at any of the zealicon-registration desks located at courtyard and AB-5 everyday from 12:30p.m. to 1:30p.m.</center></h3>
+        <center><h1>Game On!!</h1></center>
+    {% endif %}
+    {% if details %}
+        {% if zeal_id %}
+            <div class="container">
+              <div class="i-card">
+                <div class="logo">
+                  <img style="margin:15px 0;" src="{% static "images/zeal_logo.png" %}">
+                  <p style="flex-basis:100%;font-size:9px;margin:5px 0">JSSATEN<br>www.zealicon.in</p>
+                </div>
+                <div class="details">
+                 <p>     
+                 <strong>Name</strong><br>
+                   {{details.name}}<br>
+                     <strong>Zeal ID</strong><br>
+                   {{zeal_id}}<br>
+                     <strong>Email</strong><br>
+                   ****HIDDEN****<br>
+                     <strong>College</strong><br>
+                   {{details.college}}
+                   </p>          
+                </div>
+              </div>
+            </div>
+        {% else %}
+        <h3> <center> Payment pending!! Please complete your due payment at zealicon registration desk located at courtyard and AB-5 from 12:30 to 1:30 @JSSATE, Noida.</center></h3>
+        <center><h1>Game On!!</h1></center>
+        {% endif %}
+    {% else %}
+
+    <div class="row">
+        <form method="POST">
+            <div class="col-lg-6 col-lg-offset-3">
+                <input type="hidden" name="token" value="srch294">
+                <div class="form-group">
+                    <label>Enter the Registration No:</label>
+                    <input type="text" name="id" id="search" class="form-control">
+                    <p class="help-block">Example: ZO_1 </p>
+                </div>
+                <div class="form-group">
+                    <input type="submit" id="submitbtn" name="submitbtn" class="col-lg-offset-1 btn btn-primary btn-lg" value="ID Search">
+                </div>
+            </div>
+        </form>
+ 
+        <form method="POST">
+            <div class="col-lg-6 col-lg-offset-3">
+                <input type="hidden" name="token" value="srch294">
+                <div class="form-group">
+                    <label>Enter the E-mail address:</label>
+                    <input type="text" name="email" id="search" class="form-control">
+                    <p class="help-block">Example: abc@xyz.com </p>
+                </div>
+                <div class="form-group">
+                    <input type="submit" id="submitbtn" name="submitbtn" class="col-lg-offset-1 btn btn-primary btn-lg" value="Mail Search">
+                </div>
+            </div>
+        </form>
+        <br><br>
+        <form method="POST">
+            <div class="col-lg-6 col-lg-offset-3">
+                <input type="hidden" name="token" value="srch294">
+                <div class="form-group">
+                    <label>Enter the contact number:</label>
+                    <input type="text" name="contact" id="search" class="form-control">
+                    <p class="help-block">Note: Only 10 digits. </p>
+                </div>
+                <div class="form-group">
+                    <input type="submit" id="submitbtn" name="submitbtn" class="col-lg-offset-1 btn btn-primary btn-lg" value="No. Search">
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>
