@@ -137,7 +137,7 @@
     {% else %}
 
     <div class="row">
-        <form method="POST">
+        <form method="POST" action="{% url 'search' %}">
             <div class="col-lg-6 col-lg-offset-3">
                 <input type="hidden" name="token" value="srch294">
                 <div class="form-group">
@@ -151,7 +151,7 @@
             </div>
         </form>
  
-        <form method="POST">
+        <form method="POST" action="{% url 'search' %}">
             <div class="col-lg-6 col-lg-offset-3">
                 <input type="hidden" name="token" value="srch294">
                 <div class="form-group">
@@ -165,7 +165,7 @@
             </div>
         </form>
         <br><br>
-        <form method="POST">
+        <form method="POST" action="{% url 'search' %}">
             <div class="col-lg-6 col-lg-offset-3">
                 <input type="hidden" name="token" value="srch294">
                 <div class="form-group">
