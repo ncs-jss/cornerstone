@@ -1,0 +1,82 @@
+{% load static %}
+
+<html>
+<head>
+  <title> Zealicon 2k19 </title>
+</head>
+<body>
+<style>
+    .container{
+      display: flex;
+      margin:auto;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-around;      
+    }
+    .i-card{
+        width: 300px;
+        height: 189px;
+        border: 2px solid #ccc;
+        padding: 0 10px;
+        display: flex;
+        margin:25px 0;
+    }
+    .i-card>*{
+      flex-basis:50%;
+    }
+    .logo{
+      text-align: center;
+      display: flex;
+      flex-direction: row;
+      flex-wrap:wrap;      
+      font-family: sans-serif;
+    }
+    
+    .logo img{
+        display: block;
+        height: 100px;
+        width: 100%;
+        padding-top: 10px;
+        padding-left: 7px;
+    }
+    .details{
+        text-align: right;
+        display: flex;
+        flex-direction:row;
+        justify-content:flex-end;
+        align-items:center;
+    }
+    .details p{
+      word-break:break-all;
+      margin: 4px 0;
+      font-size: 13px;
+    }
+    </style>
+  {% if zeal_ids %}
+<div class="container">
+  {% for i in zeal_ids %}
+  <div class="i-card">
+    <div class="logo">
+      <img style="margin:15px 0;" src="{% static "images/zeal_logo.png" %}">
+      <p style="flex-basis:100%;font-size:9px;margin:5px 0">JSSATEN<br>www.zealicon.in</p>
+    </div>
+    <div class="details">
+     <p>     
+     <strong>Name</strong><br>
+       {{i.details.name}}<br>
+         <strong>Zeal ID</strong><br>
+       {{i.zeal_id}}<br>
+         <strong>Email</strong><br>
+       {{i.details.email}}<br>
+         <strong>College</strong><br>
+       {{i.details.college}}
+       </p>          
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<h1> No ID Cards to print.. </h1>
+{% endif %}
+</body>
+</html>
