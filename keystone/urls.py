@@ -13,4 +13,5 @@ urlpatterns = [
     path('transfer', views.transfer, name='transfer'),
     path('print', views.printing, name='print'),
     path('zealid', views.search, name='search'),
+    path('zeal_admin', views.admin_dashboard, name='admin_dash'),
 ]

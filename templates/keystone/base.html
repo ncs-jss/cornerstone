@@ -4,11 +4,25 @@
 <html lang="en">
 
 <head>
-<style type="text/css">
+    <style type="text/css">
     .errorlist{
         color: red;
     }
-</style>
+    .table-container{
+        width: 80vw;
+        position: absolute;
+        top: 20vh;
+        right: 10vh; 
+        }
+    .members-table{
+        width: 100%;
+        }
+    .members-table th, .members-table td{
+        text-align: center;
+        padding: 5px;
+        border: 1px solid black;
+    }
+    </style> 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -92,6 +106,7 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">       
+                        {% if request.user.groups.all.0.name == 'reg_admin' %}
                         <li>
                             <a href="{% url 'dashboard' %}"><i class="fa fa-dashboard fa-fw"></i> Home </a>
                         </li>
@@ -101,9 +116,14 @@
                         <li>
                             <a href="{% url 'transfer' %}"><i class="fa fa-user fa-fw"></i> Already Registered </a>
                         </li>
-                         <li>
+                        <li>
                             <a href="{% url 'print' %}"><i class="fa fa-print fa-fw"></i> Print </a>
                         </li>
+                        {% elif request.user.groups.all.0.name == 'admin_major' %}
+                        <li>
+                            <a href="{% url 'admin_dash' %}"><i class="fa fa-user fa-fw"></i> Registration Summary </a>
+                        </li>
+                        {% endif %}
 <!--                        <li>
                             <a href="/custom"><i class="fa fa-print fa-fw"></i> Custom Search </a>
                         </li>
