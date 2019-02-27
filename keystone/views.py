@@ -96,10 +96,11 @@ def temp_submit(request, id):
 
 
 def dashboard(request):
-    if str(request.user.groups.all()[0]) == config.group[3]:
-        return HttpResponseRedirect('/zeal_admin')
-    elif str(request.user.groups.all()[0]) == config.group[2]:
-        return render(request, "keystone/dashboard.html", {})
+    if request.user.is_authenticated:
+        if str(request.user.groups.all()[0]) == config.group[3]:
+            return HttpResponseRedirect('/zeal_admin')
+        elif str(request.user.groups.all()[0]) == config.group[2]:
+            return render(request, "keystone/dashboard.html", {})
     return HttpResponseRedirect(config.root)
 
 
@@ -247,30 +248,30 @@ def printing(request):
 
 
 def admin_dashboard(request):
-    if str(request.user.groups.all()[0]) == config.group[3]:
-        data = list(models.registeration.objects.values('created_at'))
-        days = list()
-        days_stat = list()
-        admin_stat = list()
-        for i in data:
-            days.append(i['created_at'])
-        days = set(days)
-        days.remove(None)
-        amount = 0
-        for day in days:
-            if day is not None:
-                ids = models.registeration.objects.filter(created_at=day)
-                val = 0
-                for i in ids:
-                    val += i.fee
-                amount += val
-                days_stat.append({'day': day, 'amount': val, 'ids': ids})
-        admins = models.reg_admin.objects.all()
-        for admin in admins:
-            ids = models.registeration.objects.filter(created_by=admin)
-            admin_stat.append({'admin': admin, 'ids': ids})
-        context = {'daystat': days_stat,
-                   'total': amount,
-                   'adminstat': admin_stat}
-        return render(request, 'keystone/admin_dash.html', context)
+    if request.user.is_authenticated:
+        if str(request.user.groups.all()[0]) == config.group[3]:
+            data = list(models.registeration.objects.values('created_at'))
+            days = list()
+            days_stat = list()
+            admin_stat = list()
+            for i in data:
+                days.append(i['created_at'])
+            days = set(days)
+            amount = 0
+            for day in days:
+                if day is not None:
+                    ids = models.registeration.objects.filter(created_at=day)
+                    val = 0
+                    for i in ids:
+                        val += i.fee
+                    amount += val
+                    days_stat.append({'day': day, 'amount': val, 'ids': ids})
+            admins = models.reg_admin.objects.all()
+            for admin in admins:
+                ids = models.registeration.objects.filter(created_by=admin)
+                admin_stat.append({'admin': admin, 'ids': ids})
+            context = {'daystat': days_stat,
+                       'total': amount,
+                       'adminstat': admin_stat}
+            return render(request, 'keystone/admin_dash.html', context)
     return HttpResponseRedirect(config.root)
