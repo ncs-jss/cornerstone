@@ -1,0 +1,69 @@
+{% extends 'keystone/base.html' %}
+{% load static %}
+{% block content %}
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header text-center">Zealicon Registration Summary</h1>
+        </div>
+    </div>
+    <h2>Total amount transferred = {{total}} </h2><br>
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-3">
+            <h3>Days Statistics</h3>
+            <table class="members-table">
+                <tr>
+                    <th>Day</th>
+                    <th>Amount Transfered</th>
+                </tr>
+                {% for day in daystat %}
+                <tr>
+                    <td>{{day.day}}</td>
+                    <td>{{day.amount}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="col-lg-6 col-lg-offset-3">
+            <h3>Reg. Admin Summary</h3>
+            <table class='members-table'>
+                <tr>
+                    <th>Reg. Admin.</th>
+                    <th>Amount Transferred</th>
+                    <th>In college reg.</th>
+                    <th>Outside clg reg.</th>
+                </tr>
+                {% for val in adminstat %}
+                <tr>
+                    <td>{{val.admin.user.first_name}}</td>
+                    <td>{{val.admin.amount_transferred}}</td>
+                    <td>{{val.admin.in_clg_reg}}</td>
+                    <td>{{val.admin.outside_clg_reg}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        {% for admin in adminstat %}
+        <div class="col-lg-6 col-lg-offset-3">
+            <h3>Ids Created by:- {{admin.admin.user.first_name}}</h3>
+            <table>
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Name</th>
+                    <th>Zeal_id</th>
+                </tr>
+                {% for id in admin.ids %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{id.details.name}}</td>
+                    <td>{{id.zeal_id}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>  
+        {% endfor %}      
+    </div>      
+</div>
+{% endblock %}
