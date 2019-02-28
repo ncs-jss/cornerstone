@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'keystone.apps.KeystoneConfig',
     'bedrock.apps.BedrockConfig',
+    'anchor.apps.AnchorConfig',
 ]
 
 MIDDLEWARE = [
