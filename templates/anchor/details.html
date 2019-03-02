@@ -1,0 +1,35 @@
+{% extends 'anchor/base.html' %}
+{% load static %}
+{% block content %}
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header text-center">Zealicon Events Registration Details</h1>
+        </div>
+    </div>
+    <div class="row">
+        {% for event in events %}
+        <div class="col-lg-6 col-lg-offset-3">
+            <h3>{{event.title}}</h3>
+            <table class="members-table">
+                <tr>
+                    <th>Sr. No</th>
+                    <th>Name</th>
+                    <th>Zeal_ID</th>
+                    <th>Contact No.</th>
+                </tr>
+                {% for member in event.registrations %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{member.zeal_id.details.name}}</td>
+                    <td>{{member.zeal_id.zeal_id}}</td>
+                    <td>{{member.zeal_id.details.contact}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <br><br><br><br>
+        {% endfor %}
+    </div> 
+</div>
+{% endblock %}

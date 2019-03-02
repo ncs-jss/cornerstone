@@ -1,0 +1,32 @@
+{% extends 'anchor/base.html' %}
+{% load static %}
+{% block content %}
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header text-center">Zealicon Events Registration Dashboard</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-3">
+            <h3>Your events</h3>
+            <table class="members-table">
+                <tr>
+                    <th>Sr. No</th>
+                    <th>Name</th>
+                    <th>Registered members</th>
+                    <th>Register Students</th>
+                </tr>
+                {% for event in events %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{event.title}}</td>
+                    <td>{{event.count}}</td>
+                    <td><a href="{% url 'ev_register' event.id %}"> Register new member!</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div> 
+</div>
+{% endblock %}
