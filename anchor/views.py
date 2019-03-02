@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib import auth
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group, User
 from django.utils import timezone
 from keystone import config
@@ -11,9 +12,18 @@ import requests
 import json
 
 
+def is_admin(user):
+    try:
+        if str(user.groups.all()[0]) == config.group[4]:
+            return True
+    except BaseException:
+        pass
+    return False
+
+
 def login(request):
     if request.user.is_authenticated:
-        return HttpResponseRedirect('/events/reg_dashboard')
+        return HttpResponseRedirect('/events/ev_dashboard')
     if request.method == 'POST':
         if request.POST['token'] == config.token[11]:
             url = config.login
@@ -38,7 +48,7 @@ def login(request):
                         user.groups.add(grp)
                         user.save()
                     auth.login(request, user)
-                    return HttpResponseRedirect('/events/reg_dashboard')
+                    return HttpResponseRedirect('/events/ev_dashboard')
                 else:
                     return HttpResponseRedirect(config.root)
             else:
@@ -81,3 +91,32 @@ def ev_register(request, evid):
     event = models.events.objects.get(api_ref_id=evid)
     context = {'title': event.title, 'id': event.api_ref_id}
     return render(request, 'anchor/register_ev.html', context)
+
+
+@user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
+def ev_dashboard(request):
+    events = list()
+    user = User.objects.get(id=request.user.id)
+    instances = models.events.objects.filter(creator=user)
+    for instance in instances:
+        count = len(models.ev_registration.objects.filter(event=instance))
+        data = {'title': instance.title,
+                'id': instance.api_ref_id,
+                'count': count}
+        events.append(data)
+    context = {'events': events}
+    return render(request, 'anchor/dashboard_ev.html', context)
+
+
+@user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
+def details(request):
+    events = list()
+    user = User.objects.get(id=request.user.id)
+    instances = models.events.objects.filter(creator=user)
+    for instance in instances:
+        reg = models.ev_registration.objects.filter(event=instance)
+        context = {'title': instance.title,
+                   'registrations': reg}
+        events.append(context)
+    context = {'events': events}
+    return render(request, 'anchor/details.html', context)
