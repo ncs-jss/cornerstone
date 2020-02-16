@@ -67,6 +67,7 @@
                     </div>
                     <div class="panel-body">
                         <form role="form" method="POST" action="{% url 'reg_login' %}">
+                            {% csrf_token %}
                             <fieldset>
                                 <div class="form-group input-group">
                                     <span class="input-group-addon"><i class="fa fa-sign-in"></i></span>

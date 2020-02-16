@@ -11,6 +11,7 @@
     <div class="row">
         <br><br><br><br>
         <form method="POST">
+            {% csrf_token %}
             <div class="col-lg-6 col-lg-offset-3">
                 <input type="hidden" name="token" value="trans734">
                 <div class="form-group">
@@ -25,6 +26,7 @@
         </form>
         <br><br>
         <form method="POST">
+            {% csrf_token %}
             <div class="col-lg-6 col-lg-offset-3">
                 <input type="hidden" name="token" value="trans734">
                 <div class="form-group">
@@ -39,8 +41,8 @@
         </form>
         <br><br>
         <form method="POST">
+            {% csrf_token %}
             <div class="col-lg-6 col-lg-offset-3">
-                <input type="hidden" name="token" value="trans734">
                 <div class="form-group">
                     <label>Enter the contact number:</label>
                     <input type="text" name="contact" id="search" class="form-control">
@@ -62,8 +64,8 @@
             Contact- {{details.contact}} <br/>
             Temp_id- {{details.temp_id}} <br/>
             <form method='post' acion="{% url 'transfer' %}">
+                {% csrf_token %}
                 <input type="hidden" name="tid" value="{{details.id}}">
-                <input type="hidden" name="token" value="trans734">
                 <button type="submit" id="submitbtn" class="col-lg-offset-1 btn btn-primary btn-lg"> Create ID </button>
             </form>
     {% elif response == '200' %}

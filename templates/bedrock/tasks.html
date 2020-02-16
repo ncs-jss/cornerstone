@@ -12,6 +12,7 @@
             <br>
             <br>
             <form role="form" method="POST" action="{% url 'tasks_create' %}" id="taskform">
+                {% csrf_token %}
                 <P> {{response}}</p>
                 <div class="form-group">
                     <label class="control-label" for ="name"> Task title : </label>
@@ -27,7 +28,6 @@
                 </div><br>
                 <div class="form-group">
                     <button type="reset" id="submitbtn" name="submitbtn" class="col-lg-offset-3 btn btn-primary btn-lg" onClick="localStorage.clear()">Reset</button>
-                    <input type="hidden" name="token" value="taskad32">
                     <button type="submit" id="submitbtn" name="submitbtn" class="col-lg-offset-1 btn btn-primary btn-lg" value="Register">Publish Task</button>
                 </div>
             </form>

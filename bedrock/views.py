@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
 from . import models, forms
@@ -72,22 +72,15 @@ def tasks_create(request):
         except BaseException:
             data = request.POST
         form = forms.tasks_add(data)
-        if data['token'] in config.token[2:4]:
-            if form.is_valid():
-                task = form.save(commit=False)
-                user = ca_admin.objects.get(user=request.user.id)
-                task.posted_by = user
-                task.save()
-                if data['token'] == config.token[2]:
-                    return JsonResponse({'response': 'success'})
-                return HttpResponseRedirect('/campusambassador/tasks')
-            else:
-                context = {'response': form.errors}
-                if data['token'] == config.token[2]:
-                    return JsonResponse(context)
-                return render(request, 'bedrock/tasks.html', context)
+        if form.is_valid():
+            task = form.save(commit=False)
+            user = ca_admin.objects.get(user=request.user.id)
+            task.posted_by = user
+            task.save()
+            return HttpResponseRedirect('/campusambassador/tasks')
         else:
-            return JsonResponse({'response': 'invalid token'})
+            context = {'response': form.errors}
+            return render(request, 'bedrock/tasks.html', context)
     else:
         tks = models.tasks.objects.filter(year=timezone.now().year)
         context = {'tks': tks}
@@ -120,31 +113,27 @@ def leaderboard(request):
 
 @user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
 def score_update(request, mem_id):
-    if request.POST['token'] == config.token[4]:
-        mmbr = ca.objects.get(id=mem_id)
-        mmbr.score = request.POST['score']
-        mmbr.save()
+    mmbr = ca.objects.get(id=mem_id)
+    mmbr.score = request.POST['score']
+    mmbr.save()
     return HttpResponseRedirect('/campusambassador/members')
 
 
 @login_required(login_url=config.root)
 def submit_task(request, task_id):
-    print(request.POST)
-    if request.POST['token'] == config.token[5]:
-        ambassador = ca.objects.get(user=request.user)
-        if ambassador.task_completed:
-            context = {'error': 'You have already submitted the task.'}
-            return render(request, 'bedrock/dashboard.html', context)
-        form = forms.task_submission(request.POST)
-        if form.is_valid():
-            submission = form.save(commit=False)
-            submission.contributor = ambassador
-            ambassador.task_completed = True
-            submission.task = models.tasks.objects.get(id=task_id)
-            ambassador.save()
-            submission.save()
-        return HttpResponseRedirect('/campusambassador')
-    return HttpResponseRedirect(config.root)
+    ambassador = ca.objects.get(user=request.user)
+    if ambassador.task_completed:
+        context = {'error': 'You have already submitted the task.'}
+        return render(request, 'bedrock/dashboard.html', context)
+    form = forms.task_submission(request.POST)
+    if form.is_valid():
+        submission = form.save(commit=False)
+        submission.contributor = ambassador
+        ambassador.task_completed = True
+        submission.task = models.tasks.objects.get(id=task_id)
+        ambassador.save()
+        submission.save()
+    return HttpResponseRedirect('/campusambassador')
 
 
 @user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
