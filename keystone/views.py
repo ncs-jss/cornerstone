@@ -4,6 +4,8 @@ from django.contrib.auth.models import Group
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+
 from . import forms, models, config
 from urllib import parse
 
@@ -34,6 +36,7 @@ def college_check(college):
         return 250, 0   # Other college Fee
 
 
+@csrf_exempt
 def login(request):
     if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
@@ -62,6 +65,7 @@ def logout(request):
     return HttpResponseRedirect(config.root)
 
 
+@csrf_exempt
 def signup(request):
     if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
@@ -104,6 +108,7 @@ def dashboard(request):
     return HttpResponseRedirect(config.root)
 
 
+@csrf_exempt
 def temp_reg(request, chk=False):
     try:
         if chk:
@@ -114,7 +119,7 @@ def temp_reg(request, chk=False):
         else:
             data = json.loads(request.body.decode('utf-8'))
         if request.method == 'POST':
-            if data['token'] in config.token[6:8]:
+            if (data['token'] in config.token[2]) or chk:
                 data = forms.details_form(data)
                 if data.is_valid():
                     details = data.save()
@@ -152,49 +157,44 @@ def generate(user, details):
 @user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
 def register(request):
     if request.method == 'POST':
-        data = request.POST
-        if data['token'] == config.token[7]:
-            stat = json.loads(temp_reg(request, True).content.decode('utf-8'))
-            if stat['response'] == '200':
-                details = models.details.objects.get(id=stat['id'])
-                zeal_id = generate(request.user, details)
-                context = {'zeal_id': zeal_id}
-                return render(request, 'keystone/print.html', context)
-            else:
-                return render(request, 'keystone/register.html', stat)
-        return HttpResponseRedirect(config.root)
+        stat = json.loads(temp_reg(request, True).content.decode('utf-8'))
+        if stat['response'] == '200':
+            details = models.details.objects.get(id=stat['id'])
+            zeal_id = generate(request.user, details)
+            context = {'zeal_id': zeal_id}
+            return render(request, 'keystone/print.html', context)
+        else:
+            return render(request, 'keystone/register.html', stat)
     return render(request, 'keystone/register.html', {})
 
 
 def search(request, chk=False):
     if request.method == 'POST':
         data = request.POST
-        if data['token'] in config.token[8:10]:
-            fields = data.keys()
-            try:
-                query = models.details.objects
-                if 'id' in fields:
-                    details = query.get(temp_id=data['id'])
-                elif 'email' in fields:
-                    details = query.get(email=data['email'])
-                elif 'contact' in fields:
-                    details = query.get(contact=data['contact'])
-            except BaseException:
-                context = {'response': '400'}
-                if chk:
-                    return 0, None
-                return render(request, 'keystone/search.html', context)
-            if details.temp_status:
-                context = {'details': details}
-                if chk:
-                    return 1, context
-                return render(request, 'keystone/search.html', context)
-            zeal_id = models.registeration.objects.get(details=details)
-            context = {'details': details, 'zeal_id': zeal_id.zeal_id}
+        fields = data.keys()
+        try:
+            query = models.details.objects
+            if 'id' in fields:
+                details = query.get(temp_id=data['id'])
+            elif 'email' in fields:
+                details = query.get(email=data['email'])
+            elif 'contact' in fields:
+                details = query.get(contact=data['contact'])
+        except BaseException:
+            context = {'response': '400'}
             if chk:
-                return 2, context
+                return 0, None
             return render(request, 'keystone/search.html', context)
-        return HttpResponseRedirect(config.root)
+        if details.temp_status:
+            context = {'details': details}
+            if chk:
+                return 1, context
+            return render(request, 'keystone/search.html', context)
+        zeal_id = models.registeration.objects.get(details=details)
+        context = {'details': details, 'zeal_id': zeal_id.zeal_id}
+        if chk:
+            return 2, context
+        return render(request, 'keystone/search.html', context)
     else:
         return render(request, 'keystone/search.html', {})
 
@@ -202,23 +202,22 @@ def search(request, chk=False):
 @user_passes_test(is_admin, login_url=config.root, redirect_field_name=None)
 def transfer(request):
     if request.method == 'POST':
-        if request.POST['token'] == config.token[8]:
-            fields = request.POST.keys()
-            if 'tid' in fields:
-                details = models.details.objects.get(id=request.POST['tid'])
-                zeal_id = generate(request.user, details)
-                context = {'zeal_id': zeal_id}
-                return render(request, 'keystone/print.html', context)
-            status, data = search(request, True)
-            if not bool(status):
-                context = {'response': '400'}
-                return render(request, 'keystone/transfer.html', context)
-            elif status == 2:
-                context = {'response': '200', 'zeal_id': data['zeal_id']}
-                return render(request, 'keystone/transfer.html', context)
-            else:
-                context = {'details': data['details']}
-                return render(request, 'keystone/transfer.html', context)
+        fields = request.POST.keys()
+        if 'tid' in fields:
+            details = models.details.objects.get(id=request.POST['tid'])
+            zeal_id = generate(request.user, details)
+            context = {'zeal_id': zeal_id}
+            return render(request, 'keystone/print.html', context)
+        status, data = search(request, True)
+        if not bool(status):
+            context = {'response': '400'}
+            return render(request, 'keystone/transfer.html', context)
+        elif status == 2:
+            context = {'response': '200', 'zeal_id': data['zeal_id']}
+            return render(request, 'keystone/transfer.html', context)
+        else:
+            context = {'details': data['details']}
+            return render(request, 'keystone/transfer.html', context)
     else:
         return render(request, 'keystone/transfer.html', {})
 
@@ -227,21 +226,20 @@ def transfer(request):
 def printing(request):
     if request.method == 'POST':
         data = request.POST
-        if data['token'] == config.token[10]:
-            try:
-                query = models.registeration.objects
-                if data['id'] == '1':
-                    ids = query.all()
-                elif data['id'] == '2':
-                    mn = int(data['min'])
-                    mx = int(data['max'])
-                    ids = query.filter(id__range=(mn, mx))
-                else:
-                    ids = query.filter(zeal_id=data['id'])
-                context = {'zeal_ids': ids}
-                return render(request, 'keystone/cards.html', context)
-            except BaseException:
-                pass
+        try:
+            query = models.registeration.objects
+            if data['id'] == '1':
+                ids = query.all()
+            elif data['id'] == '2':
+                mn = int(data['min'])
+                mx = int(data['max'])
+                ids = query.filter(id__range=(mn, mx))
+            else:
+                ids = query.filter(zeal_id=data['id'])
+            context = {'zeal_ids': ids}
+            return render(request, 'keystone/cards.html', context)
+        except BaseException:
+            pass
         context = {'errors': 'Invalid'}
         return render(request, 'keystone/print.html', context)
     return render(request, 'keystone/print.html', {})

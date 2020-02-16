@@ -116,8 +116,8 @@
     </div>
     <div class="row">
         <form method="POST" action="{% url 'ev_register' id %}">
+            {% csrf_token %}
             <div class="col-lg-6 col-lg-offset-3">
-                <input type="hidden" name="token" value="evntReg853">
                 <div class="form-group">
                     <label>Enter your Zeal_ID:</label>
                     <input type="text" name="id" id="search" class="form-control">
