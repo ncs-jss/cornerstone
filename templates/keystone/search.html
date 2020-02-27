@@ -138,6 +138,7 @@
 
     <div class="row">
         <form method="POST" action="{% url 'search' %}">
+            {% csrf_token %}
             <div class="col-lg-6 col-lg-offset-3">
                 <input type="hidden" name="token" value="srch294">
                 <div class="form-group">
@@ -152,6 +153,7 @@
         </form>
  
         <form method="POST" action="{% url 'search' %}">
+            {% csrf_token %}
             <div class="col-lg-6 col-lg-offset-3">
                 <input type="hidden" name="token" value="srch294">
                 <div class="form-group">
@@ -166,6 +168,7 @@
         </form>
         <br><br>
         <form method="POST" action="{% url 'search' %}">
+            {% csrf_token %}
             <div class="col-lg-6 col-lg-offset-3">
                 <input type="hidden" name="token" value="srch294">
                 <div class="form-group">
