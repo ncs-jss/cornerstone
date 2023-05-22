@@ -2,5 +2,5 @@ django>=2.0.1
 flake8==3.6.0
 django-cors-headers==2.4.0
 django-import-export==1.2.0
-requests==2.21.0
+requests==2.31.0
 
